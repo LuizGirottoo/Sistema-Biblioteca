@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Emprestar Livro</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>Emprestar Livro</h1>
+<nav><a th:href="@{/}">Inicio</a></nav>
+
+<p th:if="${mensagemSucesso}" class="sucesso" th:text="${mensagemSucesso}"></p>
+<p th:if="${mensagemErro}" class="erro" th:text="${mensagemErro}"></p>
+
+<form th:action="@{/emprestar}" method="post">
+    <label>RA do Aluno</label>
+    <input type="text" name="ra" required="required"/>
+
+    <label>Exemplares disponiveis para emprestimo</label>
+    <div th:each="e : ${exemplares}" th:if="${e.situacao.name() == 'DISPONIVEL'}">
+        <input type="checkbox" name="exemplarIds" th:value="${e.id}"
+               th:id="'ex-' + ${e.id}"/>
+        <label th:for="'ex-' + ${e.id}" style="display:inline"
+               th:text="'Exemplar ' + ${e.codigoTombo} + ' (titulo id ' + ${e.tituloId} + ')'"></label>
+    </div>
+
+    <button type="submit">Confirmar Emprestimo</button>
+</form>
+</body>
+</html>

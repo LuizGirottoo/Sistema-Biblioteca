@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Alunos</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>Cadastro de Alunos</h1>
+<nav><a th:href="@{/}">Inicio</a></nav>
+
+<form th:action="@{/alunos}" method="post">
+    <label>RA</label>
+    <input type="text" name="ra" required="required"/>
+    <label>Nome</label>
+    <input type="text" name="nome" required="required"/>
+    <label>Email</label>
+    <input type="email" name="email"/>
+    <button type="submit">Cadastrar Aluno</button>
+</form>
+
+<h2>Alunos Cadastrados</h2>
+<table>
+    <tr><th>ID</th><th>RA</th><th>Nome</th><th>Email</th><th>Em Debito?</th></tr>
+    <tr th:each="a : ${alunos}">
+        <td th:text="${a.id}"></td>
+        <td th:text="${a.ra}"></td>
+        <td th:text="${a.nome}"></td>
+        <td th:text="${a.email}"></td>
+        <td th:text="${a.emDebito} ? 'Sim' : 'Nao'"></td>
+    </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Biblioteca</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>Sistema de Biblioteca</h1>
+<nav>
+    <a th:href="@{/livros}">Cadastro de Livros</a>
+    <a th:href="@{/alunos}">Cadastro de Alunos</a>
+    <a th:href="@{/emprestar}">Emprestar Livro</a>
+    <a th:href="@{/devolver}">Devolver Livro</a>
+</nav>
+<p>Bem-vindo(a). Utilize o menu acima para cadastrar livros e alunos, ou para
+   realizar emprestimos e devolucoes.</p>
+</body>
+</html>

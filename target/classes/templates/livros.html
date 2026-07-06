@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Livros</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>Cadastro de Livros</h1>
+<nav><a th:href="@{/}">Inicio</a></nav>
+
+<h2>Novo Titulo (obra)</h2>
+<form th:action="@{/livros/titulo}" method="post">
+    <label>Nome</label>
+    <input type="text" name="nome" required="required"/>
+    <label>Autor</label>
+    <input type="text" name="autor" required="required"/>
+    <label>ISBN</label>
+    <input type="text" name="isbn"/>
+    <label>Prazo de emprestimo (dias)</label>
+    <input type="number" name="prazoEmprestimoDias" value="7" min="1" required="required"/>
+    <button type="submit">Cadastrar Titulo</button>
+</form>
+
+<h2>Novo Exemplar (copia fisica de um titulo)</h2>
+<form th:action="@{/livros/exemplar}" method="post">
+    <label>Titulo</label>
+    <select name="tituloId" required="required">
+        <option th:each="t : ${titulos}" th:value="${t.id}" th:text="${t.nome} + ' - ' + ${t.autor}"></option>
+    </select>
+    <label>Codigo de Tombo</label>
+    <input type="text" name="codigoTombo" required="required"/>
+    <button type="submit">Cadastrar Exemplar</button>
+</form>
+
+<h2>Titulos Cadastrados</h2>
+<table>
+    <tr><th>ID</th><th>Nome</th><th>Autor</th><th>ISBN</th><th>Prazo (dias)</th></tr>
+    <tr th:each="t : ${titulos}">
+        <td th:text="${t.id}"></td>
+        <td th:text="${t.nome}"></td>
+        <td th:text="${t.autor}"></td>
+        <td th:text="${t.isbn}"></td>
+        <td th:text="${t.prazoEmprestimoDias}"></td>
+    </tr>
+</table>
+
+<h2>Exemplares Cadastrados</h2>
+<table>
+    <tr><th>ID</th><th>Titulo (id)</th><th>Codigo de Tombo</th><th>Situacao</th></tr>
+    <tr th:each="e : ${exemplares}">
+        <td th:text="${e.id}"></td>
+        <td th:text="${e.tituloId}"></td>
+        <td th:text="${e.codigoTombo}"></td>
+        <td th:text="${e.situacao}"></td>
+    </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Devolver Livro</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>Devolver Livro</h1>
+<nav><a th:href="@{/}">Inicio</a></nav>
+
+<p th:if="${mensagemSucesso}" class="sucesso" th:text="${mensagemSucesso}"></p>
+<p th:if="${mensagemErro}" class="erro" th:text="${mensagemErro}"></p>
+
+<table>
+    <tr>
+        <th>Item</th><th>Exemplar</th><th>Titulo</th><th>Aluno</th>
+        <th>Devolucao Prevista</th><th>Acao</th>
+    </tr>
+    <tr th:each="i : ${itensPendentes}" th:classappend="${i.atrasado} ? 'atrasado' : ''">
+        <td th:text="${i.itemId}"></td>
+        <td th:text="${i.codigoTombo}"></td>
+        <td th:text="${i.tituloNome}"></td>
+        <td th:text="${i.alunoNome} + ' (' + ${i.alunoRa} + ')'"></td>
+        <td th:text="${i.dataDevolucaoPrevista}"></td>
+        <td>
+            <form th:action="@{'/devolver/' + ${i.itemId}}" method="post">
+                <button type="submit">Registrar Devolucao</button>
+            </form>
+        </td>
+    </tr>
+</table>
+<p th:if="${#lists.isEmpty(itensPendentes)}">Nao ha itens pendentes de devolucao no momento.</p>
+</body>
+</html>
