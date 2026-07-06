@@ -152,6 +152,7 @@ classDiagram
         +save(Item) Item
         +findByEmprestimoId(Integer) List~Item~
         +findPendentes() List~Item~
+        +findPendentePorExemplarId(Integer) Optional~Item~
         +registrarDevolucao(Integer, LocalDate)
     }
     class ItemDAOImpl {
@@ -163,6 +164,7 @@ classDiagram
     }
     class DevolucaoService {
         +devolver(Integer itemId) boolean
+        +devolverPorCodigoLivro(String codigoLivro) boolean
     }
 
     class DatabaseConfig {
@@ -225,20 +227,33 @@ classDiagram
 
 - **Ator principal**: Aluno (atendido por um atendente/bibliotecario no
   balcao, via sistema).
-- **Pre-condicoes**: existe um item de emprestimo (exemplar) ainda nao
-  devolvido.
-- **Fluxo principal**:
-  1. O atendente seleciona, na lista de itens pendentes, o item a ser
-     devolvido.
-  2. O sistema verifica se o item ja nao foi devolvido anteriormente.
-  3. O sistema registra a data efetiva de devolucao.
-  4. O sistema marca o exemplar correspondente como `DISPONIVEL` novamente.
-  5. Se a devolucao ocorreu apos a data prevista, o sistema marca o aluno
+- **Pre-condicoes**: existe um exemplar cadastrado e um emprestimo aberto
+  (item ainda nao devolvido) associado a ele.
+- **Fluxo principal (por codigo do livro)**:
+  1. O atendente informa o codigo do livro (codigo de tombo do exemplar)
+     no formulario de devolucao.
+  2. O sistema busca o exemplar correspondente ao codigo informado.
+  3. O sistema busca o emprestimo aberto (item sem devolucao) associado a
+     esse exemplar.
+  4. O sistema registra a data efetiva de devolucao no item do emprestimo.
+  5. O sistema marca o item do emprestimo como devolvido e o exemplar
+     correspondente volta a ficar `DISPONIVEL`.
+  6. Se a devolucao ocorreu apos a data prevista, o sistema marca o aluno
      como em situacao de `debito`.
-  6. Se todos os itens do emprestimo ja tiverem sido devolvidos, o
-     emprestimo e marcado como `FINALIZADO`.
+  7. Se todos os itens do emprestimo ja tiverem sido devolvidos, o
+     emprestimo e encerrado, sendo marcado como `FINALIZADO`.
+- **Fluxo alternativo (por item da lista)**: o atendente tambem pode
+  selecionar diretamente, na lista de itens pendentes, o item a ser
+  devolvido (util quando o codigo do livro nao esta em maos); a partir
+  do passo 4 o fluxo e identico.
 - **Fluxos de excecao**:
-  - Item inexistente ou ja devolvido → sistema informa o erro.
+  - Codigo de livro nao corresponde a nenhum exemplar cadastrado → o
+    sistema informa o erro e nao realiza a devolucao.
+  - Nao ha emprestimo em aberto para o exemplar informado (livro nao
+    emprestado ou ja devolvido) → o sistema informa o erro e nao realiza
+    a devolucao.
+  - Item selecionado na lista ja foi devolvido anteriormente → o sistema
+    informa o erro.
 
 ## 6. Diagramas de Sequencia
 
@@ -281,7 +296,53 @@ sequenceDiagram
     EmprestimoController -->> Atendente: pagina com confirmacao/erro
 ```
 
-### 6.2 Devolver Livro
+### 6.2 Devolver Livro (por codigo do livro)
+
+```mermaid
+sequenceDiagram
+    actor Atendente
+    participant DevolucaoController
+    participant DevolucaoService
+    participant ExemplarDAO
+    participant ItemDAO
+    participant EmprestimoDAO
+    participant AlunoDAO
+
+    Atendente ->> DevolucaoController: POST /devolver/codigo (codigoLivro)
+    DevolucaoController ->> DevolucaoService: devolverPorCodigoLivro(codigoLivro)
+    DevolucaoService ->> ExemplarDAO: findByCodigoTombo(codigoLivro)
+    ExemplarDAO -->> DevolucaoService: Exemplar
+
+    alt exemplar nao encontrado
+        DevolucaoService -->> DevolucaoController: RegraNegocioException
+    else exemplar encontrado
+        DevolucaoService ->> ItemDAO: findPendentePorExemplarId(exemplarId)
+        ItemDAO -->> DevolucaoService: Item (emprestimo aberto)
+
+        alt nao ha emprestimo aberto
+            DevolucaoService -->> DevolucaoController: RegraNegocioException
+        else emprestimo aberto encontrado
+            DevolucaoService ->> ItemDAO: registrarDevolucao(itemId, hoje)
+            DevolucaoService ->> ExemplarDAO: updateSituacao(exemplarId, DISPONIVEL)
+            DevolucaoService ->> EmprestimoDAO: findById(emprestimoId)
+            EmprestimoDAO -->> DevolucaoService: Emprestimo
+
+            alt devolucao atrasada
+                DevolucaoService ->> AlunoDAO: updateDebito(alunoId, true)
+            end
+
+            DevolucaoService ->> ItemDAO: findByEmprestimoId(emprestimoId)
+            ItemDAO -->> DevolucaoService: List~Item~
+            alt todos os itens devolvidos
+                DevolucaoService ->> EmprestimoDAO: atualizarStatus(id, FINALIZADO)
+            end
+            DevolucaoService -->> DevolucaoController: sucesso (no prazo / atrasado)
+        end
+    end
+    DevolucaoController -->> Atendente: pagina com confirmacao/erro
+```
+
+### 6.3 Devolver Livro (fluxo alternativo, por item da lista)
 
 ```mermaid
 sequenceDiagram
@@ -298,7 +359,7 @@ sequenceDiagram
     DevolucaoService ->> ItemDAO: findById(itemId)
     ItemDAO -->> DevolucaoService: Item
 
-    alt item ja devolvido
+    alt item inexistente ou ja devolvido
         DevolucaoService -->> DevolucaoController: RegraNegocioException
     else item pendente
         DevolucaoService ->> ItemDAO: registrarDevolucao(itemId, hoje)
