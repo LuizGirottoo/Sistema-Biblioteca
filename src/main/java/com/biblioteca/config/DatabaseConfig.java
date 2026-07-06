@@ -10,8 +10,8 @@ import java.sql.Statement;
 
 /**
  * Fabrica centralizada de conexoes JDBC com o banco SQLite.
- * Usada por todas as classes DAO da camada de persistencia.
  */
+
 @Component
 public class DatabaseConfig {
 
