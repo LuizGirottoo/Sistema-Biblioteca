@@ -15,7 +15,7 @@ GitHub Actions).
 
 ## Arquitetura
 
-O sistema segue uma **arquitetura em camadas (Layered Architecture)** combinada
+O sistema segue uma **arquitetura em camadas (Layered Architecture)**, combinada
 com o padrao **MVC** na camada de apresentacao e o padrao **DAO** na camada de
 persistencia:
 
