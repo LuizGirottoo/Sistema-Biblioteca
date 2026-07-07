@@ -6,7 +6,7 @@ GitHub Actions).
 
 ## Equipe
 
-| Nome | RA | Responsabilidade |
+| Nome | Matricula | Responsabilidade |
 |---|---|---|
 | Luiz G. B. Girotto | 202401220351 | Arquitetura DAO e Banco |
 | Antonio J. Santos | 202401220077 | Cadastro e Interface Gráfica |
