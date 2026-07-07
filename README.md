@@ -11,7 +11,7 @@ GitHub Actions).
 | Luiz G. B. Girotto | 202401220351 | Arquitetura DAO e Banco |
 | Antonio J. Santos | 202401220077 | Cadastro e Interface Gráfica |
 | Eduardo P. Barbosa | 202401220124 | Empréstimo e Devolução |
-| Heitor Oliveira Nunes | 202401220226 | Teste, DevOps e Scrum |
+| Heitor Oliveira Nunes | 202401220226 | Testes Estruturais e de Execução, DevOps e Scrum |
 
 ## Arquitetura
 
