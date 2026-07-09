@@ -1,6 +1,6 @@
 # Sistema de Biblioteca
 
-Trabalho final da disciplina de Engenharia de Software (UEL) — Sistema de
+Trabalho final da disciplina de Engenharia de Software (UEL): Sistema de
 Biblioteca desenvolvido com praticas ageis (Scrum/Kanban) e DevOps (CI/CD via
 GitHub Actions).
 
